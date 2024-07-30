@@ -16,7 +16,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) initRoutes() {
-
+	h.router.GET("/user_baner", h.GetUserBanner)
 }
 
 func New(storage storage) *Handler {
