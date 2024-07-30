@@ -9,25 +9,25 @@ import (
 )
 
 func (h *Handler) GetUserBanner(c *gin.Context) {
-	tagID, err := strconv.Atoi(c.Param("tag_id"))
+	featureID, err := strconv.Atoi(c.Request.URL.Query().Get("feature_id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid id")
+		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid feature_id")
 		return
 	}
 
-	featureID, err := strconv.Atoi(c.Param("feature_id"))
+	tagID, err := strconv.Atoi(c.Request.URL.Query().Get("tag_id"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid id")
+		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid tag_id")
 		return
 	}
 
-	useLastVersion, err := strconv.ParseBool(c.Param("use_last_version"))
+	useLastVersion, err := strconv.ParseBool(c.Request.URL.Query().Get("use_last_version"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid id")
+		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid use_last_version")
 		return
 	}
 
 	fmt.Println(tagID, featureID, useLastVersion)
 
-	c.JSON(http.StatusOK, GetUserBannerResponse{})
+	c.JSON(http.StatusOK, UserBanner{})
 }
