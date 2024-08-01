@@ -26,12 +26,7 @@ func (h *Handler) PatchBanner(c *gin.Context) {
 	err = h.iStorage.PatchBanner(storage.Banner{
 		TagIds:    req.TagIds,
 		FeatureID: req.FeatureID,
-		Content: storage.Content{
-			Title: req.Content.Title,
-			Text:  req.Content.Text,
-			URL:   req.Content.URL,
-		},
-		IsActive: req.IsActive,
+		IsActive:  req.IsActive,
 	})
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())

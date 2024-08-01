@@ -16,7 +16,24 @@ func (h *Handler) AddBanner(c *gin.Context) {
 		return
 	}
 
-	err := h.iStorage.CreateBanner(storage.Banner{})
+	// bytes, err := json.Marshal(&req.Content)
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+
+	//content, err := strconv.Unquote(string(bytes))
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+
+	err := h.iStorage.CreateBanner(storage.Banner{
+		Content:   `"title": "some_title"`,
+		FeatureID: req.FeatureID,
+		TagIds:    req.TagIds,
+		IsActive:  req.IsActive,
+	})
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return

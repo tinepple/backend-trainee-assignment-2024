@@ -29,5 +29,5 @@ func (h *Handler) GetUserBanner(c *gin.Context) {
 
 	fmt.Println(tagID, featureID, useLastVersion)
 
-	c.JSON(http.StatusOK, UserBanner{})
+	c.JSON(http.StatusOK, nil)
 }
