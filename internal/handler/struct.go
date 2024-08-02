@@ -7,7 +7,7 @@ import (
 
 type GetBannerResponse struct {
 	BannerID  int
-	TagIds    []int
+	TagIds    []int64
 	FeatureID int
 	Content   json.RawMessage
 	IsActive  bool
@@ -16,7 +16,7 @@ type GetBannerResponse struct {
 }
 
 type AddBannerRequest struct {
-	TagIds    []int           `json:"tag_ids"`
+	TagIds    []int64         `json:"tag_ids"`
 	FeatureID int             `json:"feature_id"`
 	Content   json.RawMessage `json:"content"`
 	IsActive  bool            `json:"is_active"`
@@ -27,7 +27,7 @@ type AddBannerResponse struct {
 }
 
 type PatchBannerRequest struct {
-	TagIds    []int           `json:"tag_ids"`
+	TagIds    []int64         `json:"tag_ids"`
 	FeatureID int             `json:"feature_id"`
 	Content   json.RawMessage `json:"content"`
 	IsActive  bool            `json:"is_active"`

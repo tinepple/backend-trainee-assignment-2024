@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"backend-trainee-assignment-2024/internal/storage"
 	"net/http"
 	"strconv"
 
@@ -9,31 +9,60 @@ import (
 )
 
 func (h *Handler) GetBanner(c *gin.Context) {
-	featureID, err := strconv.Atoi(c.Request.URL.Query().Get("feature_id"))
+	featureID, err := getQueryInt(c, "feature_id")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid feature_id")
 		return
 	}
 
-	tagID, err := strconv.Atoi(c.Request.URL.Query().Get("tag_id"))
+	tagID, err := getQueryInt(c, "tag_id")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid tag_id")
 		return
 	}
 
-	limit, err := strconv.Atoi(c.Request.URL.Query().Get("limit"))
+	limit, err := getQueryInt(c, "limit")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid limit")
 		return
 	}
 
-	offset, err := strconv.Atoi(c.Request.URL.Query().Get("offset"))
+	offset, err := getQueryInt(c, "offset")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid offset")
 		return
 	}
 
-	fmt.Println(tagID, featureID, limit, offset)
+	banners, err := h.iStorage.GetBanners(tagID, featureID, limit, offset)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map2Response(banners))
+}
 
-	c.JSON(http.StatusOK, []GetBannerResponse{}) //вообще там массив таких структур!!!
+func getQueryInt(c *gin.Context, key string) (int, error) {
+	if !c.Request.URL.Query().Has(key) {
+		return 0, nil
+	}
+	result, err := strconv.Atoi(c.Request.URL.Query().Get(key))
+	if err != nil {
+		return 0, nil
+	}
+	return result, nil
+}
+func map2Response(banners []storage.Banner) []GetBannerResponse {
+	resp := make([]GetBannerResponse, 0, len(banners))
+
+	for _, banner := range banners {
+		resp = append(resp, GetBannerResponse{
+			BannerID:  banner.Id,
+			TagIds:    banner.TagIds,
+			FeatureID: banner.FeatureID,
+			Content:   banner.Content,
+			IsActive:  banner.IsActive,
+			CreatedAt: banner.CreatedAt,
+		})
+	}
+	return resp
 }
