@@ -16,20 +16,8 @@ func (h *Handler) AddBanner(c *gin.Context) {
 		return
 	}
 
-	// bytes, err := json.Marshal(&req.Content)
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-	// 	return
-	// }
-
-	//content, err := strconv.Unquote(string(bytes))
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-	// 	return
-	// }
-
 	err := h.iStorage.CreateBanner(storage.Banner{
-		Content:   `"title": "some_title"`,
+		Content:   req.Content,
 		FeatureID: req.FeatureID,
 		TagIds:    req.TagIds,
 		IsActive:  req.IsActive,

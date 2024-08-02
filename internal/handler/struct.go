@@ -16,10 +16,10 @@ type GetBannerResponse struct {
 }
 
 type AddBannerRequest struct {
-	TagIds    []int       `json:"tag_ids"`
-	FeatureID int         `json:"feature_id"`
-	Content   interface{} `json:"content"`
-	IsActive  bool        `json:"is_active"`
+	TagIds    []int           `json:"tag_ids"`
+	FeatureID int             `json:"feature_id"`
+	Content   json.RawMessage `json:"content"`
+	IsActive  bool            `json:"is_active"`
 }
 
 type AddBannerResponse struct {

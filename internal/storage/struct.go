@@ -3,6 +3,6 @@ package storage
 type Banner struct {
 	TagIds    []int
 	FeatureID int
-	Content   string
+	Content   []byte
 	IsActive  bool
 }
