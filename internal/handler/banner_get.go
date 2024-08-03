@@ -9,6 +9,19 @@ import (
 )
 
 func (h *Handler) GetBanner(c *gin.Context) {
+	token := c.Request.Header.Get("Token")
+
+	role, err := h.iStorage.GetRole(token)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, err)
+		return
+	}
+
+	if role != Admin {
+		c.AbortWithStatus(http.StatusForbidden)
+		return
+	}
+
 	featureID, err := getQueryInt(c, "feature_id")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid feature_id")
@@ -33,7 +46,7 @@ func (h *Handler) GetBanner(c *gin.Context) {
 		return
 	}
 
-	banners, err := h.iStorage.GetBanners(tagID, featureID, limit, offset)
+	banners, err := h.iStorage.GetBannersAdmin(tagID, featureID, limit, offset)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
