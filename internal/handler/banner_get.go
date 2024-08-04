@@ -9,19 +9,6 @@ import (
 )
 
 func (h *Handler) GetBanner(c *gin.Context) {
-	token := c.Request.Header.Get("Token")
-
-	role, err := h.iStorage.GetRole(token)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, err)
-		return
-	}
-
-	if role != Admin {
-		c.AbortWithStatus(http.StatusForbidden)
-		return
-	}
-
 	featureID, err := getQueryInt(c, "feature_id")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid feature_id")

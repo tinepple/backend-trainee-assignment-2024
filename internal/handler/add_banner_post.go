@@ -2,7 +2,6 @@ package handler
 
 import (
 	"backend-trainee-assignment-2024/internal/storage"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,7 @@ func (h *Handler) AddBanner(c *gin.Context) {
 		return
 	}
 
-	err := h.iStorage.CreateBanner(storage.Banner{
+	bannerID, err := h.iStorage.CreateBannerWithTags(storage.Banner{
 		Content:   req.Content,
 		FeatureID: req.FeatureID,
 		TagIds:    req.TagIds,
@@ -27,5 +26,5 @@ func (h *Handler) AddBanner(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(req.FeatureID)
+	c.JSON(http.StatusCreated, AddBannerResponse{BannerID: bannerID})
 }

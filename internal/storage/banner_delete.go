@@ -1,8 +1,11 @@
 package storage
 
-import sq "github.com/Masterminds/squirrel"
+import (
+	sq "github.com/Masterminds/squirrel"
+	"github.com/jmoiron/sqlx"
+)
 
-func (s Storage) DeleteBanner(id int) error {
+func (s Storage) DeleteBannerWithTags(bannerID int) error {
 	tx, err := s.db.Beginx()
 	if err != nil {
 		return err
@@ -14,8 +17,22 @@ func (s Storage) DeleteBanner(id int) error {
 		}
 	}()
 
+	err = s.deleteBannerTags(tx, bannerID)
+	if err != nil {
+		return err
+	}
+
+	err = s.deleteBanner(tx, bannerID)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (s Storage) deleteBannerTags(tx *sqlx.Tx, bannerID int) error {
 	query, params, err := sq.Delete(bannerTagsTableName).
-		Where(sq.Eq{"banner_id": id}).
+		Where(sq.Eq{"banner_id": bannerID}).
 		PlaceholderFormat(sq.Dollar).
 		ToSql()
 	if err != nil {
@@ -27,8 +44,12 @@ func (s Storage) DeleteBanner(id int) error {
 		return err
 	}
 
-	query, params, err = sq.Delete(bannersTableName).
-		Where(sq.Eq{"id": id}).
+	return nil
+}
+
+func (s Storage) deleteBanner(tx *sqlx.Tx, bannerID int) error {
+	query, params, err := sq.Delete(bannersTableName).
+		Where(sq.Eq{"id": bannerID}).
 		PlaceholderFormat(sq.Dollar).
 		ToSql()
 	if err != nil {
@@ -40,5 +61,5 @@ func (s Storage) DeleteBanner(id int) error {
 		return err
 	}
 
-	return tx.Commit()
+	return nil
 }

@@ -8,14 +8,6 @@ import (
 )
 
 func (h *Handler) GetUserBanner(c *gin.Context) {
-	token := c.Request.Header.Get("Token")
-
-	role, err := h.iStorage.GetRole(token)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, err)
-		return
-	}
-
 	featureID, err := getQueryInt(c, "feature_id")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, "invalid feature_id")
@@ -42,7 +34,7 @@ func (h *Handler) GetUserBanner(c *gin.Context) {
 
 	var banners []storage.Banner
 
-	if role == Admin {
+	if h.IsUserAdmin(c) {
 
 		banners, err = h.iStorage.GetBannersAdmin(tagID, featureID, limit, offset)
 		if err != nil {
@@ -55,7 +47,6 @@ func (h *Handler) GetUserBanner(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-
 	}
 
 	c.JSON(http.StatusOK, map2Response(banners))

@@ -16,11 +16,12 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) initRoutes() {
-	h.router.GET("/user_banner", h.GetUserBanner)
-	h.router.GET("/banner", h.GetBanner)
-	h.router.POST("/banner", h.AddBanner)
-	h.router.PATCH("/banner/:id", h.PatchBanner)
-	h.router.DELETE("/banner/:id", h.DeleteBanner)
+	adminGroup := h.router.Group("/", h.CheckAuth)
+	adminGroup.GET("/user_banner", h.GetUserBanner)
+	adminGroup.GET("/banner", h.GetBanner)
+	adminGroup.POST("/banner", h.AddBanner)
+	adminGroup.PATCH("/banner/:id", h.PatchBanner)
+	adminGroup.DELETE("/banner/:id", h.DeleteBanner)
 }
 
 func New(iStorage iStorage) *Handler {

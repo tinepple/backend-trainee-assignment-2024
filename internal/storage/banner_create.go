@@ -2,13 +2,14 @@ package storage
 
 import (
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jmoiron/sqlx"
 )
 
-func (s Storage) CreateBanner(banner Banner) error {
+func (s Storage) CreateBannerWithTags(banner Banner) (int, error) {
 
 	tx, err := s.db.Beginx()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer func() {
@@ -16,8 +17,27 @@ func (s Storage) CreateBanner(banner Banner) error {
 			_ = tx.Rollback()
 		}
 	}()
+	bannerId, err := s.createBanner(tx, banner)
+	if err != nil {
+		return 0, err
+	}
 
-	query, params, err := sq.Insert("banners").
+	err = s.createBannerTags(tx, bannerId, banner.TagIds)
+	if err != nil {
+		return 0, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return 0, err
+	}
+
+	return bannerId, nil
+}
+
+func (s Storage) createBanner(tx *sqlx.Tx, banner Banner) (int, error) {
+
+	query, params, err := sq.Insert(bannersTableName).
 		Columns(
 			"feature_id",
 			"is_active",
@@ -36,21 +56,19 @@ func (s Storage) CreateBanner(banner Banner) error {
 
 	err = tx.QueryRow(query, params...).Scan(&bannerId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	for _, tagId := range banner.TagIds {
-		_, err = tx.Exec("insert into tags values ($1) on conflict do nothing;", tagId)
-		if err != nil {
-			return err
-		}
-		query, params, err = sq.Insert("banner_tags").
+	return bannerId, nil
+}
+
+func (s Storage) createBannerTags(tx *sqlx.Tx, bannerID int, tagIDs []int64) error {
+	for _, tagId := range tagIDs {
+		query, params, err := sq.Insert(tagsTableName).
 			Columns(
-				"banner_id",
-				"tag_id",
+				"id",
 			).
 			Values(
-				bannerId,
 				tagId,
 			).
 			PlaceholderFormat(sq.Dollar).
@@ -61,7 +79,23 @@ func (s Storage) CreateBanner(banner Banner) error {
 			return err
 		}
 
+		query, params, err = sq.Insert(bannerTagsTableName).
+			Columns(
+				"banner_id",
+				"tag_id",
+			).
+			Values(
+				bannerID,
+				tagId,
+			).
+			PlaceholderFormat(sq.Dollar).
+			ToSql()
+
+		_, err = tx.Exec(query, params...)
+		if err != nil {
+			return err
+		}
 	}
 
-	return tx.Commit()
+	return nil
 }
