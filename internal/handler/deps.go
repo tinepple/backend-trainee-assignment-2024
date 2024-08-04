@@ -6,7 +6,7 @@ import (
 
 type iStorage interface {
 	CreateBanner(banner storageDto.Banner) error
-	PatchBanner(banner storageDto.Banner) error
+	PatchBanner(banner storageDto.BannerPatch) error
 	DeleteBanner(id int) error
 	GetBannersAdmin(tagId int, featureId, limit, offset int) ([]storageDto.Banner, error)
 	GetBannersActive(tagId int, featureId, limit, offset int) ([]storageDto.Banner, error)

@@ -28,7 +28,7 @@ type AddBannerResponse struct {
 
 type PatchBannerRequest struct {
 	TagIds    []int64         `json:"tag_ids"`
-	FeatureID int             `json:"feature_id"`
+	FeatureID *int            `json:"feature_id"`
 	Content   json.RawMessage `json:"content"`
-	IsActive  bool            `json:"is_active"`
+	IsActive  *bool           `json:"is_active"`
 }

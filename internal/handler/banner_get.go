@@ -75,6 +75,7 @@ func map2Response(banners []storage.Banner) []GetBannerResponse {
 			Content:   banner.Content,
 			IsActive:  banner.IsActive,
 			CreatedAt: banner.CreatedAt,
+			UpdatedAt: banner.UpdatedAt,
 		})
 	}
 	return resp
